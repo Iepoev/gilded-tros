@@ -29,8 +29,25 @@ export class GildedTros {
             name: item.name,
             quality: item.quality,
             sellIn: item.sellIn,
-            category: ItemCategories.GENERIC,
+            category: this.nameToCategory(item.name),
         };
+    }
+
+    private nameToCategory(name: string) : ItemCategories {
+        if(name.includes('Good Wine')) {
+            return ItemCategories.GOOD_WINE
+        } else if(name.includes('Backstage pass')) {
+            return ItemCategories.BACKSTAGE_PASS
+        } else if(name.includes('B-DAWG Keychain')) {
+            return ItemCategories.KEYCHAIN
+        } else if(
+            name.includes('Duplicate Code')
+            || name.includes('Long Methods')
+            || name.includes('Ugly Variable Names')) {
+            return ItemCategories.SMELLY
+        } else {
+            return ItemCategories.GENERIC
+        }
     }
 
     public updateQuality(): void {
