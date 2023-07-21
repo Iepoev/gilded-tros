@@ -17,16 +17,16 @@ class CategorizedItem extends Item {
     }
 
     private nameToCategory(name: string) : ItemCategories {
-        if(name.includes('Good Wine')) {
+        if(name.toLowerCase().includes('good wine')) {
             return ItemCategories.GOOD_WINE
-        } else if(name.includes('Backstage pass')) {
+        } else if(name.toLowerCase().includes('backstage pass')) {
             return ItemCategories.BACKSTAGE_PASS
-        } else if(name.includes('B-DAWG Keychain')) {
+        } else if(name.toLowerCase().includes('b-dawg keychain')) {
             return ItemCategories.KEYCHAIN
         } else if(
-            name.includes('Duplicate Code')
-            || name.includes('Long Methods')
-            || name.includes('Ugly Variable Names')) {
+            name.toLowerCase().includes('duplicate code')
+            || name.toLowerCase().includes('long methods')
+            || name.toLowerCase().includes('ugly variable Names')) {
             return ItemCategories.SMELLY
         } else {
             return ItemCategories.GENERIC
@@ -37,12 +37,11 @@ class CategorizedItem extends Item {
 
 
 export class GildedTros {
+    public items : CategorizedItem[];
 
-    private ItemCategories = ItemCategories;
-    private categorizedItems : CategorizedItem[] = [];
-
-    constructor(public items: Item[]) {
-        this.items = items.map(item => new CategorizedItem(item));
+    constructor(inputItems: Item[]) {
+        // todo items property should not be altered, store a copy of categorized items instead
+        this.items = inputItems.map(item => new CategorizedItem(item));
     }
 
     public updateQuality(): void {
