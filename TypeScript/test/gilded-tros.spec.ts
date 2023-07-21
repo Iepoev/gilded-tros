@@ -36,20 +36,20 @@ describe('GildedTrosTest', () => {
         expect(app.items[0].quality).toEqual(50);
     })
     test('single keychain', () => {
-        const items: Item[] = [new Item('B-DAWG Keychain', 0, 5)];
+        const items: Item[] = [new Item('B-DAWG Keychain', 0, 80)];
         const app: GildedTros = new GildedTros(items);
         app.updateQuality();
         expect(app.items[0].sellIn).toEqual(0);
-        expect(app.items[0].quality).toEqual(5);
+        expect(app.items[0].quality).toEqual(80);
         app.updateQuality();
         expect(app.items[0].sellIn).toEqual(0);
-        expect(app.items[0].quality).toEqual(5);
+        expect(app.items[0].quality).toEqual(80);
         app.updateQuality();
         expect(app.items[0].sellIn).toEqual(0);
-        expect(app.items[0].quality).toEqual(5);
+        expect(app.items[0].quality).toEqual(80);
         app.updateQuality();
         expect(app.items[0].sellIn).toEqual(0);
-        expect(app.items[0].quality).toEqual(5);
+        expect(app.items[0].quality).toEqual(80);
     })
     test('single Backstage pass', () => {
         const items: Item[] = [new Item('Backstage passes for Re:Factor', 11, 0)];
