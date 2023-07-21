@@ -89,10 +89,10 @@ describe('GildedTrosTest', () => {
         expect(app.items[0].quality).toEqual(26);
         app.updateQuality();
         expect(app.items[0].sellIn).toEqual(-1);
-        expect(app.items[0].quality).toEqual(28);// should be 0?
+        expect(app.items[0].quality).toEqual(0);
         app.updateQuality();
         expect(app.items[0].sellIn).toEqual(-2);
-        expect(app.items[0].quality).toEqual(30);// should be 0?
+        expect(app.items[0].quality).toEqual(0);
     })
     test('single smelly item', () => {
         const items: Item[] = [new Item('Duplicate Code', 2, 20)];

@@ -3,12 +3,21 @@ import {Item} from './item';
 enum ItemCategories {
     GENERIC,
     GOOD_WINE,
-    KEYCHAIN,
+    LEGENDARY,
     BACKSTAGE_PASS,
     SMELLY,
 }
 
 class CategorizedItem extends Item {
+    readonly MAX_QUALITY = 50;
+    private readonly categoryUpdateMap: Record<ItemCategories, () => void> = {
+        [ItemCategories.GENERIC]: this.updateGeneric.bind(this),
+        [ItemCategories.GOOD_WINE]: this.updateGoodWine.bind(this),
+        [ItemCategories.LEGENDARY]: () => null,
+        [ItemCategories.BACKSTAGE_PASS]: this.updateBackstagePass.bind(this),
+        [ItemCategories.SMELLY]: this.updateSmelly.bind(this),
+    }
+
     private category: ItemCategories
 
     constructor(item: Item) {
@@ -22,7 +31,7 @@ class CategorizedItem extends Item {
         } else if(name.toLowerCase().includes('backstage pass')) {
             return ItemCategories.BACKSTAGE_PASS
         } else if(name.toLowerCase().includes('b-dawg keychain')) {
-            return ItemCategories.KEYCHAIN
+            return ItemCategories.LEGENDARY
         } else if(
             name.toLowerCase().includes('duplicate code')
             || name.toLowerCase().includes('long methods')
@@ -32,67 +41,57 @@ class CategorizedItem extends Item {
             return ItemCategories.GENERIC
         }
     }
+
+    public updateQuality(): void {
+        this.categoryUpdateMap[this.category]();
+        if(this.category !== ItemCategories.LEGENDARY) {
+            this.quality = this.limitQuality(0, this.quality, this.MAX_QUALITY);
+            this.sellIn = this.sellIn -1
+        }
+    }
+
+    private limitQuality(min: number, val: number, max: number) {
+        return Math.min(Math.max(val, min), max);
+    }
+
+    private updateGeneric(): void {
+        this.quality = this.sellIn > 0 ? this.quality - 1 : this.quality - 2
+    }
+
+    private updateGoodWine(): void {
+        this.quality = this.quality + 1;
+    }
+
+    private updateBackstagePass(): void {
+        if(this.sellIn <= 0) {
+            this.quality = 0;
+        } else if (this.sellIn <= 5) {
+            this.quality = this.quality + 3;
+        } else if (this.sellIn <= 10) {
+            this.quality = this.quality + 2;
+        } else {
+            this.quality = this.quality + 1;
+        }
+
+    }
+
+    private updateSmelly(): void {
+        this.quality = this.sellIn > 0 ? this.quality - 2 : this.quality - 4
+    }
 }
 
 
 export class GildedTros {
-    public categorizedItems : CategorizedItem[];
+    public items : CategorizedItem[];
 
-    constructor(public items: Item[]) {
-        this.categorizedItems = items.map(item => new CategorizedItem(item));
+    constructor(inputItems: Item[]) {
+        this.items = inputItems.map(item => new CategorizedItem(item));
     }
 
     public updateQuality(): void {
-        for (let i = 0; i < this.items.length; i++) {
-            if (this.items[i].name != 'Good Wine' && this.items[i].name != 'Backstage passes for Re:Factor'
-                && this.items[i].name != 'Backstage passes for HAXX') {
-                if (this.items[i].quality > 0) {
-                    if (this.items[i].name != 'B-DAWG Keychain') {
-                        this.items[i].quality = this.items[i].quality - 1;
-                    }
-                }
-            } else {
-                if (this.items[i].quality < 50) {
-                    this.items[i].quality = this.items[i].quality + 1;
-
-                    if (this.items[i].name == 'Backstage passes for Re:Factor') {
-                        if (this.items[i].sellIn < 11) {
-                            if (this.items[i].quality < 50) {
-                                this.items[i].quality = this.items[i].quality + 1;
-                            }
-                        }
-
-                        if (this.items[i].sellIn < 6) {
-                            if (this.items[i].quality < 50) {
-                                this.items[i].quality = this.items[i].quality + 1;
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (this.items[i].name != 'B-DAWG Keychain') {
-                this.items[i].sellIn = this.items[i].sellIn - 1;
-            }
-
-            if (this.items[i].sellIn < 0) {
-                if (this.items[i].name != 'Good Wine') {
-                    if (this.items[i].name != 'Backstage passes for Re:Factor' || this.items[i].name != 'Backstage passes for HAXX') {
-                        if (this.items[i].quality > 0) {
-                            if (this.items[i].name != 'B-DAWG Keychain') {
-                                this.items[i].quality = this.items[i].quality - 1;
-                            }
-                        }
-                    } else {
-                        this.items[i].quality = this.items[i].quality - this.items[i].quality;
-                    }
-                } else {
-                    if (this.items[i].quality < 50) {
-                        this.items[i].quality = this.items[i].quality + 1;
-                    }
-                }
-            }
-        }
+        this.items.forEach(item => {
+            item.updateQuality();
+        });
     }
 }
 
