@@ -12,7 +12,7 @@ class CategorizedItem extends Item {
     readonly MAX_QUALITY = 50;
     private readonly categoryUpdateMap: Record<ItemCategories, () => void> = {
         [ItemCategories.GENERIC]: this.updateGeneric.bind(this),
-        [ItemCategories.GOOD_WINE]: this.updateGoodWine.bind(this),
+        [ItemCategories.GOOD_WINE]: (() => this.quality = this.quality + 1).bind(this),
         [ItemCategories.LEGENDARY]: () => null,
         [ItemCategories.BACKSTAGE_PASS]: this.updateBackstagePass.bind(this),
         [ItemCategories.SMELLY]: this.updateSmelly.bind(this),
@@ -45,21 +45,13 @@ class CategorizedItem extends Item {
     public updateQuality(): void {
         this.categoryUpdateMap[this.category]();
         if(this.category !== ItemCategories.LEGENDARY) {
-            this.quality = this.limitQuality(0, this.quality, this.MAX_QUALITY);
+            this.quality = Math.min(Math.max(this.quality, 0), this.MAX_QUALITY)
             this.sellIn = this.sellIn -1
         }
     }
 
-    private limitQuality(min: number, val: number, max: number) {
-        return Math.min(Math.max(val, min), max);
-    }
-
     private updateGeneric(): void {
         this.quality = this.sellIn > 0 ? this.quality - 1 : this.quality - 2
-    }
-
-    private updateGoodWine(): void {
-        this.quality = this.quality + 1;
     }
 
     private updateBackstagePass(): void {
@@ -72,7 +64,6 @@ class CategorizedItem extends Item {
         } else {
             this.quality = this.quality + 1;
         }
-
     }
 
     private updateSmelly(): void {
