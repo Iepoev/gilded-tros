@@ -1,9 +1,36 @@
 import {Item} from './item';
 
+enum ItemCategories {
+    GENERIC,
+    GOOD_WINE,
+    KEYCHAIN,
+    BACKSTAGE_PASS,
+    SMELLY,
+}
+
+type CategorizedItem = {
+    name: string,
+    quality: number,
+    sellIn: number,
+    category: ItemCategories
+}
+
 export class GildedTros {
 
-    constructor(public items: Array<Item>) {
+    private ItemCategories = ItemCategories;
+    private categorizedItems : CategorizedItem[] = [];
 
+    constructor(public items: Item[]) {
+        this.categorizedItems = items.map(this.transformItem);
+    }
+
+    private transformItem(item: Item) : CategorizedItem {
+        return {
+            name: item.name,
+            quality: item.quality,
+            sellIn: item.sellIn,
+            category: ItemCategories.GENERIC,
+        };
     }
 
     public updateQuality(): void {
