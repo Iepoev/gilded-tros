@@ -32,16 +32,14 @@ class CategorizedItem extends Item {
             return ItemCategories.GENERIC
         }
     }
-
 }
 
 
 export class GildedTros {
-    public items : CategorizedItem[];
+    public categorizedItems : CategorizedItem[];
 
-    constructor(inputItems: Item[]) {
-        // todo items property should not be altered, store a copy of categorized items instead
-        this.items = inputItems.map(item => new CategorizedItem(item));
+    constructor(public items: Item[]) {
+        this.categorizedItems = items.map(item => new CategorizedItem(item));
     }
 
     public updateQuality(): void {
