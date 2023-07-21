@@ -8,29 +8,12 @@ enum ItemCategories {
     SMELLY,
 }
 
-type CategorizedItem = {
-    name: string,
-    quality: number,
-    sellIn: number,
-    category: ItemCategories
-}
+class CategorizedItem extends Item {
+    private category: ItemCategories
 
-export class GildedTros {
-
-    private ItemCategories = ItemCategories;
-    private categorizedItems : CategorizedItem[] = [];
-
-    constructor(public items: Item[]) {
-        this.categorizedItems = items.map(this.transformItem);
-    }
-
-    private transformItem(item: Item) : CategorizedItem {
-        return {
-            name: item.name,
-            quality: item.quality,
-            sellIn: item.sellIn,
-            category: this.nameToCategory(item.name),
-        };
+    constructor(item: Item) {
+        super(item.name, item.sellIn, item.quality);
+        this.category = this.nameToCategory(item.name);
     }
 
     private nameToCategory(name: string) : ItemCategories {
@@ -48,6 +31,18 @@ export class GildedTros {
         } else {
             return ItemCategories.GENERIC
         }
+    }
+
+}
+
+
+export class GildedTros {
+
+    private ItemCategories = ItemCategories;
+    private categorizedItems : CategorizedItem[] = [];
+
+    constructor(public items: Item[]) {
+        this.items = items.map(item => new CategorizedItem(item));
     }
 
     public updateQuality(): void {
@@ -102,6 +97,5 @@ export class GildedTros {
             }
         }
     }
-
 }
 
