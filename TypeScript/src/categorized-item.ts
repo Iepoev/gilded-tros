@@ -10,10 +10,13 @@ enum ItemCategories {
 
 export class CategorizedItem {
     readonly MAX_QUALITY = 50;
-    private readonly categoryUpdateMap: Record<ItemCategories, () => void> = {
+    private category: ItemCategories
+    private item: Item
+
+    private readonly categoryUpdateMap: Record<ItemCategories, (() => void)|undefined> = {
         [ItemCategories.GENERIC]: this.updateGeneric.bind(this),
         [ItemCategories.GOOD_WINE]: (() => this.item.quality = this.item.quality + 1).bind(this),
-        [ItemCategories.LEGENDARY]: () => null,
+        [ItemCategories.LEGENDARY]: undefined,
         [ItemCategories.BACKSTAGE_PASS]: this.updateBackstagePass.bind(this),
         [ItemCategories.SMELLY]: this.updateSmelly.bind(this),
     }
@@ -26,15 +29,12 @@ export class CategorizedItem {
         [ItemCategories.SMELLY]: /duplicate code|long methods|ugly variable names/,
     }
 
-    private category: ItemCategories
-    private item: Item
-
     constructor(item: Item) {
         this.item = item;
-        this.category = this.nameToCategory(item.name);
+        this.category = this.nameToCategory();
     }
 
-    private nameToCategory(name: string) : ItemCategories {
+    private nameToCategory() : ItemCategories {
         for (const [category, regex] of Object.entries(this.categoryKeywordsMap)) {
             if(regex?.test(this.item.name.toLowerCase())){
                 return category as ItemCategories
@@ -44,8 +44,9 @@ export class CategorizedItem {
     }
 
     public updateQuality(): void {
-        this.categoryUpdateMap[this.category]();
-        if(this.category !== ItemCategories.LEGENDARY) {
+        const updateQualityFn = this.categoryUpdateMap[this.category];
+        if(updateQualityFn) {
+            updateQualityFn();
             this.item.quality = Math.min(Math.max(this.item.quality, 0), this.MAX_QUALITY)
             this.item.sellIn = this.item.sellIn -1
         }
