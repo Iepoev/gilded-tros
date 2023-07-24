@@ -1,11 +1,11 @@
 import {Item} from './item';
 
 enum ItemCategories {
-    GENERIC,
-    GOOD_WINE,
-    LEGENDARY,
-    BACKSTAGE_PASS,
-    SMELLY,
+    GENERIC = 'generic',
+    GOOD_WINE = 'good_wine',
+    LEGENDARY = 'legendary',
+    BACKSTAGE_PASS = 'backstage_pass',
+    SMELLY = 'smelly',
 }
 
 class CategorizedItem extends Item {
@@ -18,6 +18,14 @@ class CategorizedItem extends Item {
         [ItemCategories.SMELLY]: this.updateSmelly.bind(this),
     }
 
+    private readonly categoryKeywordsMap: Record<ItemCategories, RegExp|undefined> = {
+        [ItemCategories.GENERIC]: undefined,
+        [ItemCategories.GOOD_WINE]: /good wine/,
+        [ItemCategories.LEGENDARY]: /b-dawg keychain/,
+        [ItemCategories.BACKSTAGE_PASS]: /backstage pass/,
+        [ItemCategories.SMELLY]: /duplicate code|long methods|ugly variable names/,
+    }
+
     private category: ItemCategories
 
     constructor(item: Item) {
@@ -26,20 +34,12 @@ class CategorizedItem extends Item {
     }
 
     private nameToCategory(name: string) : ItemCategories {
-        if(name.toLowerCase().includes('good wine')) {
-            return ItemCategories.GOOD_WINE
-        } else if(name.toLowerCase().includes('backstage pass')) {
-            return ItemCategories.BACKSTAGE_PASS
-        } else if(name.toLowerCase().includes('b-dawg keychain')) {
-            return ItemCategories.LEGENDARY
-        } else if(
-            name.toLowerCase().includes('duplicate code')
-            || name.toLowerCase().includes('long methods')
-            || name.toLowerCase().includes('ugly variable Names')) {
-            return ItemCategories.SMELLY
-        } else {
-            return ItemCategories.GENERIC
+        for (const [category, regex] of Object.entries(this.categoryKeywordsMap)) {
+            if(regex?.test(this.name.toLowerCase())){
+                return category as ItemCategories
+            }
         }
+        return ItemCategories.GENERIC;
     }
 
     public updateQuality(): void {
